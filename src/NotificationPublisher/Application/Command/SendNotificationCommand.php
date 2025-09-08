@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\NotificationPublisher\Application\Command;
+
+class SendNotificationCommand
+{
+    public function __construct(
+        public string $userId,
+        public string $channel,
+        public string $content,
+        public string $receiver
+    ) {}
+}

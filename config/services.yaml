@@ -1,0 +1,60 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+        public: true
+        
+    App\NotificationPublisher\UserInterface\Controller\:
+        resource: '../src/NotificationPublisher/UserInterface/Controller'
+        tags: [ 'controller.service_arguments' ]
+        public: true
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Controller'
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+    # --- Providers ---
+    App\NotificationPublisher\Infrastructure\Provider\Email\DummyEmailProvider: ~
+    App\NotificationPublisher\Infrastructure\Provider\Sms\DummySmsProvider: ~
+    
+    App\NotificationPublisher\Infrastructure\Provider\Sms\TwilioSmsProvider:
+        arguments:
+            $accSid: '%env(TWILIO_ACC_SID)%'
+            $authToken: '%env(TWILIO_AUTH_TOKEN)%'
+            $fromNumber: '%env(TWILIO_FROM_NUMBER)%'
+
+    App\NotificationPublisher\Infrastructure\Provider\Email\AwsSesEmailProvider:
+        arguments:
+            $apiKey: '%env(AWS_SES_API_KEY)%'
+            $apiSecret: '%env(AWS_SES_API_SECRET)%'
+            $fromEmail: '%env(AWS_SES_FROM_EMAIL)%'
+            $region: '%env(AWS_SES_REGION)%'
+
+    # --- Notification Manager ---
+    App\NotificationPublisher\Domain\Service\NotificationManager:
+        arguments:
+            $providersByChannel:
+                sms:
+                    - '@App\NotificationPublisher\Infrastructure\Provider\Sms\TwilioSmsProvider'
+                    - '@App\NotificationPublisher\Infrastructure\Provider\Sms\DummySmsProvider'
+
+                email:
+                    - '@App\NotificationPublisher\Infrastructure\Provider\Email\AwsSesEmailProvider'
+                    - '@App\NotificationPublisher\Infrastructure\Provider\Email\DummyEmailProvider'
+                    - 
+                push: [] #Example disabled service
+

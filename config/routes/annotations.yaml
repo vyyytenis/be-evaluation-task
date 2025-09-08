@@ -1,0 +1,3 @@
+notification_controllers:
+    resource: ../../src/NotificationPublisher/UserInterface/Controller/
+    type: annotation

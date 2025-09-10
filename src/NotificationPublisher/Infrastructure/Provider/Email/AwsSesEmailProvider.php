@@ -50,9 +50,8 @@ class AwsSesEmailProvider implements ProviderInterface
                 'Source' => $this->fromEmail,
             ]);
 
-            // Mock sending email through AWS SES
             dump(sprintf(
-                "Sending Email to user %d: %s Email to %s",
+                "Sending Email to user %d: %s to: %s",
                 $message->userId,
                 $message->content,
                 $message->receiver
@@ -60,7 +59,6 @@ class AwsSesEmailProvider implements ProviderInterface
 
             return true;
         } catch (AwsException  $e) {
-            dump($e->getMessage());
             throw new ProviderException("AWS SES sending failed: " . $e->getAwsErrorMessage(), 0, $e);
         }
     }

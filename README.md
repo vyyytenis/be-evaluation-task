@@ -13,10 +13,13 @@
 7. Open `https://localhost`
 
 # IMPORTANT Twilio!
-* To send sms other than to +3706079094, I need to **verify new number in Twilio account**.
-* If you send to other than +3706079094 **it will fail and dummy sms provider will be used** as failover. And database status will equal to failed, message: **Failed to send notification**
+* To send sms other than to +37060790942, I need to **verify new number in Twilio account**.
+* If you send to other than +37060790942 **it will fail and dummy sms provider will be used** as failover. Simulates a random failure
 
 # IMPORTANT AWS SES!
 * You send email to vyyytenis@gmail.com or kareiva.vytenis@gmail.com, counter in AWS goes up.
-* To send to other, emails have to be verified, otherwise it will fail and go to Dummy sender. 
+* To send to other, emails have to be verified, otherwise it will fail and go to Dummy sender. Simulates a random failure
 
+vendor/bin/phpunit tests/Functional/SendNotificationHanlderTest.php 
+
+bin/console make:test

@@ -5,6 +5,7 @@ namespace App\NotificationPublisher\Infrastructure\Provider\Sms;
 use App\NotificationPublisher\Domain\Model\NotificationMessage;
 use App\NotificationPublisher\Infrastructure\Provider\ProviderInterface;
 use App\NotificationPublisher\Infrastructure\Provider\ProviderException;
+use Twilio\Exceptions\TwilioException;
 use Twilio\Rest\Client;
 
 class TwilioSmsProvider implements ProviderInterface
@@ -20,7 +21,7 @@ class TwilioSmsProvider implements ProviderInterface
         try {
             $twilio = new Client($this->accSid, $this->authToken);
 
-            $twilioResponse  = $twilio->messages->create(
+            $response = $twilio->messages->create(
                 $message->receiver,
                 [
                     "body" =>$message->content,
@@ -28,18 +29,15 @@ class TwilioSmsProvider implements ProviderInterface
                 ]
             );
 
-            dump("Twillio RES");
-            dump($twilioResponse);
-
             dump(sprintf(
-                "Sending SMS to user %d: %s Sms to %s Twillio res %",
+                "Sending SMS to user %d: %s to: %s",
                 $message->userId,
                 $message->content,
-                $message->receiver,
+                $message->receiver
             ));
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (TwilioException $e) {
             throw new ProviderException("Twilio SMS sending failed: " . $e->getMessage(), 0, $e);
         }
     }

@@ -8,6 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'notifications')]
 class Notification
 {
+    const STATUS_PENDING = "pending";
+    const STATUS_SENT = "sent";
+    const STATUS_THROTTLED = "throttled";
+    const STATUS_FAILED = "failed";
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]

@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\NotificationPublisher\Application\Command;
+namespace App\NotificationPublisher\Application\Message;
 
-class SendNotificationCommand
+class NotificationMessage
 {
     public function __construct(
         public string $userId,
         public string $channel,
         public string $content,
-        public string $receiver
-    ) {}
+        public string $receiver,
+    ) {
+    }
 }

@@ -10,6 +10,11 @@ class DoctrineNotificationRepository implements NotificationRepositoryInterface
 {
     public function __construct(private EntityManagerInterface $em) {}
 
+    public function find(int $id): ?Notification
+    {
+        return $this->em->getRepository(Notification::class)->find($id);
+    }
+
     public function findAll(): array
     {
         return $this->em->getRepository(Notification::class)->findAll();

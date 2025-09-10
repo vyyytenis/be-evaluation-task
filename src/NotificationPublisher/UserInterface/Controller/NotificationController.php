@@ -2,20 +2,21 @@
 
 namespace App\NotificationPublisher\UserInterface\Controller;
 
+use App\Dto\RequestDto;
 use App\NotificationPublisher\Domain\Repository\NotificationRepositoryInterface;
+use App\NotificationPublisher\Domain\Service\NotificationMessageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use App\NotificationPublisher\Application\Command\SendNotificationCommand;
+use App\NotificationPublisher\Application\Command\SendNotificationMessage;
 
 class NotificationController extends AbstractController
 {
     public function __construct(
-        private MessageBusInterface $bus,
         private NotificationRepositoryInterface $repository,
-//        private ValidatorInterface $validator,
+        private NotificationMessageService $messageService,
     ) {
     }
 
@@ -23,26 +24,17 @@ class NotificationController extends AbstractController
     public function send(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        // validatoriaus check
+
         if (!isset($data['notifications']) || !is_array($data['notifications'])) {
             return new JsonResponse(['error' => 'Invalid payload'], 400);
         }
 
-        //data keliauja i service
-
-        foreach ($data['notifications'] as $notificationData) {
-            $this->bus->dispatch(new SendNotificationCommand(
-                $notificationData['userId'],
-                $notificationData['channel'],
-                $notificationData['content'],
-                $notificationData['receiver']
-            ));
-        }
+        $this->messageService->createAndSave($data['notifications']);
 
         return new JsonResponse([
             'status' => 'queued',
             'count' => count($data['notifications'])
-        ], 202);
+        ], 201);
     }
 
     #[Route('/api/list-notifications', name: 'list_notifications', methods: ['GET'])]
